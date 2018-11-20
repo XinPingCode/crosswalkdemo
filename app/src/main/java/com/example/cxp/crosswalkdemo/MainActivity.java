@@ -13,6 +13,7 @@ import android.os.Build;
 import android.view.View;
 import android.widget.Button;
 
+import org.xwalk.core.XWalkPreferences;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkView;
 import org.xwalk.core.XWalkSettings;
@@ -56,6 +57,10 @@ public class MainActivity extends Activity {
                 w2();
             }
         } );
+        // turn on debugging
+        XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, true);
+
+
         xWalkWebView.setResourceClient(new XWalkResourceClient(xWalkWebView){
             @Override
             public void onLoadFinished(XWalkView view, String url) {
@@ -67,12 +72,15 @@ public class MainActivity extends Activity {
                 super.onLoadStarted(view, url);
                 Log.v("TAG","LoadStarted");
             }
+
         });
         // 获取到UserAgentString
         String userAgent = settings.getUserAgentString();
         // 打印结果
         Log.v("TAG", "User Agent:" + userAgent);
         xWalkWebView.addJavascriptInterface(new JsInterface(), "NativeInterface");
+        xWalkWebView.setUIClient(new MyXWalkUIClient(xWalkWebView));
+        xWalkWebView.onDestroy();
 
     }
     class JsInterface {
